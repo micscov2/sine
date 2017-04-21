@@ -1,0 +1,62 @@
+Notes
+-------
+Application layer protocol
+Text based conferencing
+Client Server arch.
+No direct communication b/w clients
+Channels are way of sending messages to multiple clients i.e. groups
+Multiple servers can be there
+Each message should follow spanning tree
+LF and CR for separation of messages
+
+
+Components
+------------
+Server
+Client
+Service
+Channel
+Message
+Operators
+
+Server
+------
+All the servers must have state information in "global state database"
+There can be hostmask to group server together
+Command: SERVER -> It is used to register a new server
+Command: NICK/USER -> It is used for new users joining
+Command: NJOIN
+
+Client 
+-------
+Client name can be maximum 9 characters [?]
+Command: JOIN -> It is used to join a channel
+Command: NAMES -> All nicknames (user) are available to him (list them)
+Command: TIME -> To query time from local server
+
+Service
+--------
+Command: SERVICE -> To introduce new service
+
+Channel
+-------
+A channel is a named group of one or more users which will all receive messages addressed to that channel.  A channel is
+characterized by its name, properties and current members.
+Command: TOPIC -> To set or change topic of the channel
+Command: LIST -> List channels and their topics
+
+Message
+--------
+prefix + command + command parameters
+
+Operators
+----------
+Users with special powers like disconnecting server[?], user etc
+Command: OPER
+Command: SQUIT -> Quit server links
+
+
+References
+-------------
+IRC protocol -> https://tools.ietf.org/html/rfc2810
+
