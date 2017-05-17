@@ -1,0 +1,6 @@
+# Problem Statement
+Running source code in docker
+
+# Solution 
+Install dependencies by install python-pip
+To expose ports on a running container WA: Commit the container to an image and restart it
