@@ -1,1 +1,2 @@
-# This file contains information about various small tasks done
+# A combination of various concepts, utilities, libraries 
+# written mostly in python
