@@ -1,0 +1,54 @@
+Elastic Search - Notes
+
+REST based
+By default runs on 9200 port
+marvel - tool for monitoring the cluster, creating commands, and more
+
+elasticsearch.yml
+	1. cluster.name - name of the cluster
+	2. node.name - name of the node, by default some fancy character
+
+Basic APIs
+_cluster/health
+
+
+Sample PUT
+curl -X PUT http://localhost:9200/library/books/1 -d '
+{
+	"name": "The Alchemist",
+	"number": 1,
+	"year": "2016"
+}'
+
+Output from [SERVER]
+{
+	"_index": "library",
+	"_type": "books",
+	"_id": "1",
+	"_version": 1,
+	"result": "created",
+	"_shards": {
+				 "total": 2,
+				 "successful": 1,
+				 "failed": 0
+			   },
+	"created": true
+}
+
+Sample GET
+{
+    "_id": "1",
+    "_index": "library",
+    "_source": {
+        "name": "The Alchemist",
+        "number": 1,
+        "year": "2016"
+    },
+    "_type": "books",
+    "_version": 1,
+    "found": true
+}
+
+
+- Unrelated -
+python -m json.tool - can print json in pretty format
