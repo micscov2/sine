@@ -1,0 +1,30 @@
+{
+	"manifest_version": 2,
+	"name": "Hello World New",
+        "description" : "This is second Chrome Extension",
+	"version": "1.0",
+
+	"page_action": {
+		"default_icon": "icon.png",
+  		"default_title": "Hello World New",
+		"default_popup": "popup.html"
+	},
+
+	"background": {
+		"scripts": ["eventPage.js"],
+		"persistent": false
+	},
+
+	"content_scripts": [
+		{
+			"matches": ["http://www.banggood.com/*"],
+			"js": ["vocab_cs.js"],
+			"css": ["vocab_cs.css"]
+		}
+	],
+
+	"permissions": [
+		"tabs",
+		"http://www.banggood.com/*"
+	]
+}

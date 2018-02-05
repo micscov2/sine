@@ -1,0 +1,53 @@
+containers
+==========
+
+containers share same kernel
+no better way to separate apps
+kernel namespaces
+cgroups for controlling resources used by containers
+capabilities - modular framework for permissions
+
+features
+- isolated view of file system, process tree, network interface
+
+play-around
+docker runs on a local socket by default
+when running on a network, we can specify
+- export DOCKER_HOST="tcp://address:port"
+
+
+info
+- Data is stored at -> /var/lib/docker/aufs/diff/hostname_id
+- Layering in images
+- Base image - os bare minimum image, for example second image - nginx
+- Top layer takes precedence
+
+Some commands
+docker run -it ubuntu /bin/bash -> to run docker with ubuntu image it: interactive
+docker ps -> to show running docker instances
+docker ps -a -> to show all docker instances
+docker -v -> small version
+docker version -> all version info
+docker info -> information about docker images and containers, file system
+docker start id_hostname -> to start the container followed by docker attach
+docker attach -> to attach to the previous line container, which is started
+docker rmi id -> to remove docker image
+docker rm id -> to remove docker container
+docker images -> gives list of images
+docker pull -a image_name -> pulls images from docker hub
+docker images --tree -> To show layering in docker
+
+Advanced commands
+===================
+docker logs -> with -f follow, --tail like tail 
+docker top -> displays running processes of a container
+docker rename <old_name> <new_name> -> change name of container, even running container
+docker inspect <container_id> -> gives low-level information about container like network settings etc
+docker diff -> Check differences in docker file system
+docker commit -> Create an image from container's changes
+docker build -> build an image from docker file
+
+
+Things to check
+1. Dockerfile
+2. docker save/load
