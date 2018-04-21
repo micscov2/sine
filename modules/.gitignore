@@ -1,0 +1,5 @@
+pgolibs/bin/*
+*.xlsx
+pgolibs/pkg/*
+*.pyc
+*.dat
