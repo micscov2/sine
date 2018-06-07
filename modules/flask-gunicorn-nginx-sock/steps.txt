@@ -1,0 +1,7 @@
+# Gunicorn starting
+gunicorn --workers 3 --bind unix:flaskproject.sock wsgi
+
+# Nginx 
+nginx -t # To check if configuration is correct
+service nginx start
+
