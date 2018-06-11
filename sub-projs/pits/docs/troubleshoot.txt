@@ -1,0 +1,19 @@
+# Check if server is running
+
+- Do a netstat on port 8000
+- Check nohup.out
+
+# Stop the server
+
+- Currently script/service based support is not there for stopping the server. 
+You have to manually kill the process
+
+# Logging
+
+- PITS uses dedicated logging for logging various KPIs like number of requests. Also
+any problem if you find with server, check logs/debug.log file
+
+# DB related
+
+- Command for changing postgres user password
+- \password postgres

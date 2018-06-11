@@ -1,0 +1,66 @@
+body {
+	margin-left: 20%;
+	margin-right: 20%;
+	background-color: silver;
+}
+
+h1, h2, h3, h4, p {
+	text-align: center;
+}
+
+button {
+	margin-left: 30%;
+	position: relative;
+}
+
+.main {
+	text-align: center;
+}
+
+#typeIn {
+	font-size: 130%;
+	margin-left: 10%;
+	margin-right: 10%;
+	font-family: sans-serif;
+}
+
+#inputByUser {
+	margin-left: 10%;
+	margin-right: 10%;
+	font-size: 130%;
+}
+
+#inputPara {
+	font-size: 130%;
+	margin-left: 10%;
+	margin-right: 10%;
+	text-align: justify;
+}
+
+#progressPara1, #progressPara2 {
+	background-color: #000;
+	margin-left: 10%;
+	margin-right: 10%;
+	border: 10px #000 solid;
+}
+
+#timer {
+	text-align: none;
+}
+
+#resetButton, .btnClass {
+	margin-left: 10%;
+	font-size: 130%;
+	color: #000003;	
+}
+
+#mySpeed {
+	margin-left: 1px;
+	font-size: 120%;
+	font-weight: bold;
+}
+
+#one {
+	margin-left: 35%;
+	font-size: 120%;
+}

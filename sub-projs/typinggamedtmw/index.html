@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+    <title>Typing Game</title>
+    <link rel="stylesheet" type="text/css" href="style.css" />
+    <script src="script.js"></script>
+    <script src="authentication.js"></script>
+    <script src="utils.js"></script>
+</head>
+
+<body onload="loadNewText()">
+    <div id="dv1">
+        <p alt="timer" id="timer">Timer = 60</p>
+    </div>
+    
+     <div id="dv3">
+        <p alt="given word" id="p1">Typing</p>
+    </div>
+    
+    <div id="dv5">
+        <input id="txt1" type="text" size="55" value=" " onkeypress="processKey(event)"/>
+    </div>
+    
+    <div id="dv2">
+        <p alt="correct words" id="p2">Correct Words = ?</p>
+        <p alt="wrong words" id="p3">Wrong Words = ?</p>
+        <p alt="correct letters" id="p4">Correct Letters = ?</p>
+        <p alt="wrong letters" id="p5">Wrong Letters = ?</p>
+    </div>
+    
+    <div id="dv4">
+        <p alt="Typing Speed" id="p6">Typing Speed = ??</p>
+    </div>
+    
+     <div id="dv6">
+        <p id="p7">User: </p>
+        <p id="p8">Total times: </p>
+        <p id="p9">Best score: </p>
+        <p id="p10">User since: </p>
+        <a href="login.html" onclick="logout()">Logout</a>
+    </div>
+    
+    <div>
+        <button onclick="reset()" id="dv7">Reset!</button>
+    </div>
+</body>
+    
+</html>

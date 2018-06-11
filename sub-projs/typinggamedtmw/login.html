@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+    <title>Typing Game</title>
+    <link rel="stylesheet" type="text/css" href="style.css" />
+    <script src="script.js"></script>
+    <script src="authentication.js"></script>
+    <script src="utils.js"></script>
+</head>
+
+<body>
+    <div id="dv1l">
+        <fieldset><legend>Sign Up</legend>
+            <table>
+            <tr>
+                <td>Username</td>
+                <td><input type="text" id="inpt1" onkeypress="customKeyListener(event, 'in')"/></td>
+            </tr>
+            <tr>
+                <td>Password</td>
+                <td><input type="password" id="inpt2" onkeypress="customKeyListener(event, 'in')" /></td>
+            </tr>
+            </table>
+            <button onclick="signIn()">Sign In</button><br /><br />
+            <a href="signup.html">New User? Sign Up!</a>
+        </fieldset>
+    </div>
+</body>
+    
+</html>

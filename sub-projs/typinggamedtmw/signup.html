@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+    <title>Typing Game</title>
+    <link rel="stylesheet" type="text/css" href="style.css" />
+    <script src="script.js"></script>
+    <script src="authentication.js"></script>
+    <script src="utils.js"></script>
+</head>
+
+<body>
+    <div id="dv1s">
+        <fieldset><legend>Sign Up</legend>
+            <table>
+                <tr>
+                    <td>Name</td> 
+                    <td><input type="text" id="inpt1s" onkeypress="customKeyListener(event, 'out')" /></td>
+                </tr>
+                <tr>
+                    <td>Password</td> 
+                    <td><input type="password" id="inpt2s" onkeypress="customKeyListener(event, 'out')" /></td>
+                </tr>
+                <tr>
+                    <td>Confirm Pasword</td>    
+                    <td><input type="password" onkeypress="customKeyListener(event, 'out')" id="inptXs" /></td>
+                </tr>
+                <tr>
+                    <td>Sec-ques1</td> 
+                    <td><input type="text" id="inpt3s" onkeypress="customKeyListener(event, 'out')" placeholder="[OPTIONAL]" /> Your favorite sport?</td>
+                </tr>
+                <tr>
+                    <td>Sec-ques2</td> 
+                    <td><input type="text" id="inpt4s" onkeypress="customKeyListener(event, 'out')" placeholder="[OPTIONAL]" /> Your favorite movie?</td>
+                </tr>
+            </table>
+            <button onclick="signUp()">Sign Up</button><br /><br />
+            <p id="statusSignup"></p>
+        </fieldset>
+    </div>
+</body>
+</html>

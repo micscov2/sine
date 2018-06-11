@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+	<link rel="stylesheet" type="text/css" href="style.css" />
+	<script src="script.js">
+	</script>
+	<title>PTM: Personal Typing Master</title>
+</head>
+
+<body onload="loadInitPara()" onunload="">
+	<fieldset><legend>Introduction Zone</legend>
+		<h1>PTM: Personal Typing Master</h1>
+		<p id="timer"></p>
+	</fieldset><br />
+	<fieldset><legend>Typing Zone</legend>
+		<div id="app" class="main">
+			<p id="inputPara">Dummy Paragraph</p>
+			<p id="progressPara1"></p>
+			<p id="progressPara2"></p>
+			<input id="typeIn" type="text" size="76" maxlength="100" onkeyup="keyProcess()" />
+		</div>
+	
+		<div>
+			<span id="one">Your speed is: </span><span id="mySpeed">Not evaluated yet....</span>
+		</div>
+		<div>
+			<button onclick="resetCounter()" id="resetButton" class="btnClass">Reset Paragraph</button>
+		</div>
+	</fieldset><br />
+
+	<fieldset><legend>Input by User Zone</legend>
+		<div id="secondary">
+			<input type="text" id="inputByUser" size="70" /><br /><br />
+			<button onclick="setPara()" class="btnClass">Set Para</button>
+		</div>
+	</fieldset><br />
+</body>
+
+</html>
