@@ -1,0 +1,31 @@
+# To encrypt the data one system using public key 
+# And read that data on another system
+# Here are steps given
+
+# Generate private key in .pem format
+openssl rsa -in privateKey.key -outform pem > id_rsa.pem
+
+# Generate public key in .pem format
+openssl rsa -in id_rsa.pem -pubout -outform pem > id_rsa.pub.pem
+
+# Create a random key using command
+openssl rand -base64 32 > key.bin
+
+# Encrypt the key using public key
+openssl rsautl -encrypt -inkey id_rsa.pub.pem -pubin -in key.bin -out key.bin.enc
+
+# Let's assume the data.txt has the data you want to encrypt
+
+# Encrypt the data
+openssl enc -aes-256-cbc -salt -in data.txt -out data.txt.enc -pass file:./key.bin
+
+# Assuming the receiver party has private key, send encrypted key (key.bin.enc), and data.txt.enc
+
+# Decrypt the key using command
+openssl rsautl -decrypt -inkey id_rsa.pem -in key.bin.enc -out key.bin
+
+# Decrypt the data using command
+openssl enc -d -aes-256-cbc -in  data.txt.enc -out data.txt -pass file:./key.bin
+
+# Voila!
+

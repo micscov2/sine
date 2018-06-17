@@ -1,0 +1,6 @@
+# Setup nodejs server to support https
+
+# Use privateKey.key and certificate.crt given in the current directory
+
+# Nodejs program
+--> https_server.js

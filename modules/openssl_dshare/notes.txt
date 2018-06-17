@@ -1,0 +1,33 @@
+# Steps for encrypting/decrypting the data
+# But before that some OpenSSL basic
+
+# CSR - Certificate Signing Request
+# There are various formats for certs like .pem, .der
+# And there are some other things also like format PCSK etc
+
+# The below command will generate self-signed certificate
+# Which means self private key is used to sign the certificate
+
+openssl req -x509 -sha256 -nodes -days 365 -newkey rsa:2048 -keyout privateKey.key -out certificate.crt
+# Here privateKey.key is private key 
+# certificate.crt is signed certificate
+# Observe in this case we don't have CSR as we are our own CA
+
+# You will be prompted to give information in following fields
+--> FILE1.TXT
+
+# You can check the content generated in 
+--> privateKey.key
+--> certificate.crt
+
+# Check the content of certificate in somewhat readable form using command
+openssl rsa -in certificate.crt -text -noout
+
+# Certificate in general stores public key, and some other data
+# Self signed certificate is signed by private key
+# Format .der is ASN.1 DER-encoded representation of certificate or key file
+# .pem stands for Privacy Enhanced Mail, a Base-64 encoded representation of the
+# DER-encoded certificate with header and footer
+# CSR is Certificate Signing Request which is given to CA to sign it
+# To check which SSL version is being used by some site
+opensll s_client -connect <some_url>:443 -ssl2
