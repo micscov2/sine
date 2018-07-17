@@ -1,7 +1,7 @@
 {
     "manifest_version": 2,
-    "name": "Tenma Sensei",
-    "description": "Rubbish things",
+    "name": "AppNetCheck",
+    "description": "Apparent Net Checker",
     "version": "1.0",
     "browser_action": {
         "default_icon": "icon.png",
