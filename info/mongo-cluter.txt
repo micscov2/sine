@@ -1,0 +1,428 @@
+[Useful Links]
+https://docs.mongodb.com/manual/tutorial/expand-replica-set/
+https://docs.mongodb.com/manual/tutorial/deploy-shard-cluster/
+https://docs.mongodb.com/v3.4/sharding/
+https://docs.mongodb.com/v3.4/core/replica-set-members/
+
+[Config server - used for sharding]
+configs - 1100
+mongodb-3.0.6/bin/mongod --configsvr --dbpath config1 --port 1100
+
+
+replica-1
+bin/mongod --shardsvr --replSet repl_set_m --dbpath repl1 --port 1200
+bin/mongod --shardsvr --replSet repl_set_m --dbpath repl2 --port 1201
+bin/mongod --shardsvr --replSet repl_set_m --dbpath repl3 --port 1202
+
+replica-2
+mongod --shardsvr --replSet repl_set_m2 --dbpath repl21 --port 1203
+bin/mongod --shardsvr --replSet repl_set_m2 --dbpath repl22 --port 1204
+bin/mongod --shardsvr --replSet repl_set_m2 --dbpath repl23 --port 1205
+
+# Below command to be run from any of mongod instance
+> rs.initiate({
+... _id: 'repl_set_m',
+... members:
+... [{ _id : 0, host : "localhost:1200" },
+... { _id : 1, host : "localhost:1201" },
+... { _id : 2, host : "localhost:1202" }]})
+{ "ok" : 1 }
+
+repl_set_m:OTHER> rs.status()
+{
+        "set" : "repl_set_m",
+        "date" : ISODate("2017-08-17T20:03:04.894Z"),
+        "myState" : 1,
+        "members" : [
+                {
+                        "_id" : 0,
+                        "name" : "localhost:1200",
+                        "health" : 1,
+                        "state" : 1,
+                        "stateStr" : "PRIMARY",
+                        "uptime" : 247,
+                        "optime" : Timestamp(1503000178, 1),
+                        "optimeDate" : ISODate("2017-08-17T20:02:58Z"),
+                        "electionTime" : Timestamp(1503000182, 1),
+                        "electionDate" : ISODate("2017-08-17T20:03:02Z"),
+                        "configVersion" : 1,
+                        "self" : true
+                },
+                {
+                        "_id" : 1,
+                        "name" : "localhost:1201",
+                        "health" : 1,
+                        "state" : 2,
+                        "stateStr" : "SECONDARY",
+                        ...
+                },
+                {
+                        "_id" : 2,
+                        ...
+                }
+        ],
+        "ok" : 1
+}
+repl_set_m:PRIMARY>
+
+
+mongos
+bin/mongos --configdb localhost:1100 --port 1300
+
+ic-vm-135:~/mongoindex$ ./pzk_mongo --port 1300
+MongoDB shell version: 3.2.8
+connecting to: 127.0.0.1:1300/test
+mongos> sh.addShard("repl_set_m/localhost:1200,localhost:1201,localhost:1202")
+{ "shardAdded" : "repl_set_m", "ok" : 1 }
+mongos>
+
+
+mongos> sh.enableSharding("test")
+{ "ok" : 1 }
+mongos>
+
+
+mongos> sh.shardCollection("test.person", {name: 1})
+{ "collectionsharded" : "test.person", "ok" : 1 }
+mongos>
+
+
+[Initial run]
+mongos> show collections
+Cannot use 'commands' readMode, degrading to 'legacy' mode
+person
+person_indx
+system.indexes
+mongos> db.person.find().count()
+48434
+mongos> db.person_indx.find().count()
+0
+mongos> db.person.find().count()
+66148
+mongos> db.person.find().count()
+100000
+mongos> db.person_indx.find().count()
+100000
+mongos> db.person.getShardDistribution()
+
+Shard repl_set_m at repl_set_m/localhost:1200,localhost:1201,localhost:1202
+ data : 10.68MiB docs : 100000 chunks : 3
+ estimated data per chunk : 3.55MiB
+ estimated docs per chunk : 33333
+
+Totals
+ data : 10.68MiB docs : 100000 chunks : 3
+ Shard repl_set_m contains 100% data, 100% docs in cluster, avg obj size on shard : 112B
+
+mongos> sh.status()
+Cannot use 'commands' readMode, degrading to 'legacy' mode
+--- Sharding Status ---
+  sharding version: {
+        "_id" : 1,
+        "minCompatibleVersion" : 5,
+        "currentVersion" : 6,
+        "clusterId" : ObjectId("5995f70b3c720d5b16a61068")
+}
+  shards:
+        {  "_id" : "repl_set_m",  "host" : "repl_set_m/localhost:1200,localhost:1201,localhost:1202" }
+  active mongoses:
+        "3.0.6" : 1
+  balancer:
+        Currently enabled:  yes
+        Currently running:  no
+        Failed balancer rounds in last 5 attempts:  0
+        Migration Results for the last 24 hours:
+                No recent migrations
+  databases:
+        {  "_id" : "admin",  "partitioned" : false,  "primary" : "config" }
+        {  "_id" : "test",  "partitioned" : true,  "primary" : "repl_set_m" }
+                test.person
+                        shard key: { "name" : 1 }
+                        unique: false
+                        balancing: true
+                        chunks:
+                                repl_set_m      3
+                        { "name" : { "$minKey" : 1 } } -->> { "name" : "TAvDDoowfLDxdZNkNjU" } on : repl_set_m Timestamp(1, 1)
+                        { "name" : "TAvDDoowfLDxdZNkNjU" } -->> { "name" : "olkiFTSqpEHyGpvDXrm" } on : repl_set_m Timestamp(1, 2)
+                        { "name" : "olkiFTSqpEHyGpvDXrm" } -->> { "name" : { "$maxKey" : 1 } } on : repl_set_m Timestamp(1, 3)
+
+mongos>
+
+mongos> sh.status()
+--- Sharding Status ---
+  sharding version: {
+        "_id" : 1,
+        "minCompatibleVersion" : 5,
+        "currentVersion" : 6,
+        "clusterId" : ObjectId("5995f70b3c720d5b16a61068")
+}
+  shards:
+        {  "_id" : "repl_set_m",  "host" : "repl_set_m/localhost:1200,localhost:1201,localhost:1202" }
+        {  "_id" : "repl_set_m2",  "host" : "repl_set_m2/localhost:1203,localhost:1204,localhost:1205" }
+  active mongoses:
+        "3.0.6" : 1
+  balancer:
+        Currently enabled:  yes
+        Currently running:  yes
+                Balancer lock taken at Thu Aug 17 2017 23:23:40 GMT+0300 (IDT) by ic-vm-135:1300:1503000377:1804289383:Balancer:846930886
+        Collections with active migrations:
+                test.person started at Thu Aug 17 2017 23:23:40 GMT+0300 (IDT)
+        Failed balancer rounds in last 5 attempts:  0
+        Migration Results for the last 24 hours:
+                No recent migrations
+  databases:
+        {  "_id" : "admin",  "partitioned" : false,  "primary" : "config" }
+        {  "_id" : "test",  "partitioned" : true,  "primary" : "repl_set_m" }
+                test.person
+                        shard key: { "name" : 1 }
+                        unique: false
+                        balancing: true
+                        chunks:
+                                repl_set_m      3
+                        { "name" : { "$minKey" : 1 } } -->> { "name" : "TAvDDoowfLDxdZNkNjU" } on : repl_set_m Timestamp(1, 1)
+                        { "name" : "TAvDDoowfLDxdZNkNjU" } -->> { "name" : "olkiFTSqpEHyGpvDXrm" } on : repl_set_m Timestamp(1, 2)
+                        { "name" : "olkiFTSqpEHyGpvDXrm" } -->> { "name" : { "$maxKey" : 1 } } on : repl_set_m Timestamp(1, 3)
+
+mongos>
+
+
+[Sharding in action]
+mongos> use test
+switched to db test
+mongos> db.person.getShardDistribution()
+
+Shard repl_set_m at repl_set_m/localhost:1200,localhost:1201,localhost:1202
+ data : 4.13MiB docs : 38731 chunks : 2
+ estimated data per chunk : 2.06MiB
+ estimated docs per chunk : 19365
+
+Shard repl_set_m2 at repl_set_m2/localhost:1203,localhost:1204,localhost:1205
+ data : 2.37MiB docs : 22287 chunks : 1
+ estimated data per chunk : 2.37MiB
+ estimated docs per chunk : 22287
+
+Totals
+ data : 6.51MiB docs : 61018 chunks : 3
+ Shard repl_set_m contains 63.47% data, 63.47% docs in cluster, avg obj size on shard : 112B
+ Shard repl_set_m2 contains 36.52% data, 36.52% docs in cluster, avg obj size on shard : 112B
+
+
+mongos>
+
+
+
+[Chunks in action]
+mongos> db.person.getShardDistribution()
+
+Shard repl_set_m at repl_set_m/localhost:1200,localhost:1201,localhost:1202
+ data : 0B docs : 0 chunks : 2
+ estimated data per chunk : 0B
+ estimated docs per chunk : 0
+
+Shard repl_set_m2 at repl_set_m2/localhost:1203,localhost:1204,localhost:1205
+ data : 0B docs : 0 chunks : 1
+ estimated data per chunk : 0B
+ estimated docs per chunk : 0
+
+Totals
+ data : 0B docs : 0 chunks : 3
+ Shard repl_set_m contains NaN% data, NaN% docs in cluster, avg obj size on shard : NaNGiB
+ Shard repl_set_m2 contains NaN% data, NaN% docs in cluster, avg obj size on shard : NaNGiB
+
+
+mongos> db.person.getShardDistribution()
+
+Shard repl_set_m at repl_set_m/localhost:1200,localhost:1201,localhost:1202
+ data : 23KiB docs : 216 chunks : 2
+ estimated data per chunk : 11KiB
+ estimated docs per chunk : 108
+
+Shard repl_set_m2 at repl_set_m2/localhost:1203,localhost:1204,localhost:1205
+ data : 12KiB docs : 116 chunks : 1
+ estimated data per chunk : 12KiB
+ estimated docs per chunk : 116
+
+Totals
+ data : 36KiB docs : 332 chunks : 3
+ Shard repl_set_m contains 65.06% data, 65.06% docs in cluster, avg obj size on shard : 112B
+ Shard repl_set_m2 contains 34.93% data, 34.93% docs in cluster, avg obj size on shard : 112B
+
+
+mongos> db.person.getShardDistribution()
+
+Shard repl_set_m at repl_set_m/localhost:1200,localhost:1201,localhost:1202
+ data : 141KiB docs : 1297 chunks : 2
+ estimated data per chunk : 70KiB
+ estimated docs per chunk : 648
+
+Shard repl_set_m2 at repl_set_m2/localhost:1203,localhost:1204,localhost:1205
+ data : 83KiB docs : 767 chunks : 1
+ estimated data per chunk : 83KiB
+ estimated docs per chunk : 767
+
+Totals
+ data : 225KiB docs : 2064 chunks : 3
+ Shard repl_set_m contains 62.83% data, 62.83% docs in cluster, avg obj size on shard : 112B
+ Shard repl_set_m2 contains 37.16% data, 37.16% docs in cluster, avg obj size on shard : 112B
+
+
+mongos> db.person.getShardDistribution()
+
+Shard repl_set_m at repl_set_m/localhost:1200,localhost:1201,localhost:1202
+ data : 519KiB docs : 4753 chunks : 2
+ estimated data per chunk : 259KiB
+ estimated docs per chunk : 2376
+
+Shard repl_set_m2 at repl_set_m2/localhost:1203,localhost:1204,localhost:1205
+ data : 302KiB docs : 2769 chunks : 1
+ estimated data per chunk : 302KiB
+ estimated docs per chunk : 2769
+
+Totals
+ data : 822KiB docs : 7522 chunks : 3
+ Shard repl_set_m contains 63.18% data, 63.18% docs in cluster, avg obj size on shard : 112B
+ Shard repl_set_m2 contains 36.81% data, 36.81% docs in cluster, avg obj size on shard : 112B
+
+
+mongos> db.person.getShardDistribution()
+
+Shard repl_set_m at repl_set_m/localhost:1200,localhost:1201,localhost:1202
+ data : 605KiB docs : 5540 chunks : 2
+ estimated data per chunk : 302KiB
+ estimated docs per chunk : 2770
+
+Shard repl_set_m2 at repl_set_m2/localhost:1203,localhost:1204,localhost:1205
+ data : 354KiB docs : 3241 chunks : 1
+ estimated data per chunk : 354KiB
+ estimated docs per chunk : 3241
+
+Totals
+ data : 960KiB docs : 8781 chunks : 3
+ Shard repl_set_m contains 63.09% data, 63.09% docs in cluster, avg obj size on shard : 112B
+ Shard repl_set_m2 contains 36.9% data, 36.9% docs in cluster, avg obj size on shard : 112B
+
+
+mongos> db.per<something-missing?>.getShardDistribution()
+
+Shard repl_set_m at repl_set_m/localhost:1200,localhost:1201,localhost:1202
+ data : 685KiB docs : 6269 chunks : 2
+ estimated data per chunk : 342KiB
+ estimated docs per chunk : 3134
+
+Shard repl_set_m2 at repl_set_m2/localhost:1203,localhost:1204,localhost:1205
+ data : 399KiB docs : 3649 chunks : 1
+ estimated data per chunk : 399KiB
+ estimated docs per chunk : 3649
+
+Totals
+ data : 1.05MiB docs : 9918 chunks : 3
+ Shard repl_set_m contains 63.2% data, 63.2% docs in cluster, avg obj size on shard : 112B
+ Shard repl_set_m2 contains 36.79% data, 36.79% docs in cluster, avg obj size on shard : 112B
+
+
+mongos> db.person.getShardDistribution()
+
+Shard repl_set_m at repl_set_m/localhost:1200,localhost:1201,localhost:1202
+ data : 805KiB docs : 7362 chunks : 2
+ estimated data per chunk : 402KiB
+ estimated docs per chunk : 3681
+
+Shard repl_set_m2 at repl_set_m2/localhost:1203,localhost:1204,localhost:1205
+ data : 467KiB docs : 4277 chunks : 1
+ estimated data per chunk : 467KiB
+ estimated docs per chunk : 4277
+
+Totals
+ data : 1.24MiB docs : 11639 chunks : 3
+ Shard repl_set_m contains 63.25% data, 63.25% docs in cluster, avg obj size on shard : 112B
+ Shard repl_set_m2 contains 36.74% data, 36.74% docs in cluster, avg obj size on shard : 112B
+
+
+mongos> db.person.getShardDistribution()
+
+Shard repl_set_m at repl_set_m/localhost:1200,localhost:1201,localhost:1202
+ data : 955KiB docs : 8740 chunks : 2
+ estimated data per chunk : 477KiB
+ estimated docs per chunk : 4370
+
+Shard repl_set_m2 at repl_set_m2/localhost:1203,localhost:1204,localhost:1205
+ data : 551KiB docs : 5044 chunks : 1
+ estimated data per chunk : 551KiB
+ estimated docs per chunk : 5044
+
+Totals
+ data : 1.47MiB docs : 13784 chunks : 3
+ Shard repl_set_m contains 63.4% data, 63.4% docs in cluster, avg obj size on shard : 112B
+ Shard repl_set_m2 contains 36.59% data, 36.59% docs in cluster, avg obj size on shard : 112B
+
+
+mongos> db.person.getShardDistribution()
+
+Shard repl_set_m at repl_set_m/localhost:1200,localhost:1201,localhost:1202
+ data : 1MiB docs : 9402 chunks : 2
+ estimated data per chunk : 514KiB
+ estimated docs per chunk : 4701
+
+Shard repl_set_m2 at repl_set_m2/localhost:1203,localhost:1204,localhost:1205
+ data : 593KiB docs : 5423 chunks : 1
+ estimated data per chunk : 593KiB
+ estimated docs per chunk : 5423
+
+Totals
+ data : 1.58MiB docs : 14825 chunks : 3
+ Shard repl_set_m contains 63.41% data, 63.41% docs in cluster, avg obj size on shard : 112B
+ Shard repl_set_m2 contains 36.58% data, 36.58% docs in cluster, avg obj size on shard : 112B
+
+
+mongos> db.person.getShardDistribution()
+
+Shard repl_set_m at repl_set_m/localhost:1200,localhost:1201,localhost:1202
+ data : 1.05MiB docs : 9905 chunks : 2
+ estimated data per chunk : 541KiB
+ estimated docs per chunk : 4952
+
+Shard repl_set_m2 at repl_set_m2/localhost:1203,localhost:1204,localhost:1205
+ data : 626KiB docs : 5726 chunks : 1
+ estimated data per chunk : 626KiB
+ estimated docs per chunk : 5726
+
+Totals
+ data : 1.66MiB docs : 15631 chunks : 3
+ Shard repl_set_m contains 63.36% data, 63.36% docs in cluster, avg obj size on shard : 112B
+ Shard repl_set_m2 contains 36.63% data, 36.63% docs in cluster, avg obj size on shard : 112B
+
+
+mongos> db.person.getShardDistribution()
+
+Shard repl_set_m at repl_set_m/localhost:1200,localhost:1201,localhost:1202
+ data : 1.12MiB docs : 10542 chunks : 2
+ estimated data per chunk : 576KiB
+ estimated docs per chunk : 5271
+
+Shard repl_set_m2 at repl_set_m2/localhost:1203,localhost:1204,localhost:1205
+ data : 669KiB docs : 6120 chunks : 1
+ estimated data per chunk : 669KiB
+ estimated docs per chunk : 6120
+
+Totals
+ data : 1.77MiB docs : 16662 chunks : 3
+ Shard repl_set_m contains 63.26% data, 63.26% docs in cluster, avg obj size on shard : 112B
+ Shard repl_set_m2 contains 36.73% data, 36.73% docs in cluster, avg obj size on shard : 112B
+
+
+mongos> db.person.getShardDistribution()
+
+Shard repl_set_m at repl_set_m/localhost:1200,localhost:1201,localhost:1202
+ data : 1.17MiB docs : 11033 chunks : 2
+ estimated data per chunk : 603KiB
+ estimated docs per chunk : 5516
+
+Shard repl_set_m2 at repl_set_m2/localhost:1203,localhost:1204,localhost:1205
+ data : 703KiB docs : 6430 chunks : 1
+ estimated data per chunk : 703KiB
+ estimated docs per chunk : 6430
+
+Totals
+ data : 1.86MiB docs : 17463 chunks : 3
+ Shard repl_set_m contains 63.17% data, 63.17% docs in cluster, avg obj size on shard : 112B
+ Shard repl_set_m2 contains 36.82% data, 36.82% docs in cluster, avg obj size on shard : 112B
