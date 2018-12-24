@@ -1,0 +1,27 @@
+----------
+ JMeter
+----------
+
+After long await, I'm done with understanding jmeter for basic web testing.
+
+There are 2 modes in JMeter, GUI and non-GUI mode. The catch is for writing 
+scripts anyway you have to use GUI mode. I didn't see how to use the GUI m-
+ode script in non-GUI mode, but shouldn't be much difficult.
+
+One of the way to get started with JMeter is to use something called templ-
+ate. Select 'Building a web test plan' from 'Templates' option. A new  test
+plan will be created. 
+
+In that test plan you can add Sampler, Assertions, Backend Listeners etc.S-
+ampler is actual HTTP request. It contains parameters like URL, port, path,
+etc. Assertion is how you check if response you got from  webserver. Backe-
+nd Listeners is to create reports from results obtained. 
+
+Results obtained in csv format:
+timeStamp,elapsed,label,responseCode,responseMessage,threadName,dataType,success,failureMessage,bytes,sentBytes,grpThreads,allThreads,URL,Latency,IdleTime,Connect
+1545389629397,450,Home Page,200,OK,Scenario 1 1-19,text,true,,228,321,693,693,http://ic-vm-135.cisco.com:12345/,450,0,221
+1545389629396,451,Home Page,200,OK,Scenario 1 1-17,text,true,,228,321,693,693,http://ic-vm-135.cisco.com:12345/,451,0,220
+
+PS:
+Thread Group - Using it we configure the number of parallel connections (users),
+how many times to repeat the actions etc. 
