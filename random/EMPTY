@@ -1,5 +1,0 @@
-Decorators
-==========
-Python only allows read access to the outer scope and not assignment from inner functions
-
-

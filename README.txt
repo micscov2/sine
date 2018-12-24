@@ -1,2 +1,3 @@
 # A combination of various concepts, utilities, libraries 
-# written mostly in python
+
+# And sub projects and lot more...

@@ -69,7 +69,7 @@ repl_set_m:PRIMARY>
 mongos
 bin/mongos --configdb localhost:1100 --port 1300
 
-ic-vm-135:~/mongoindex$ ./pzk_mongo --port 1300
+some_host_name:~/mongoindex$ ./pzk_mongo --port 1300
 MongoDB shell version: 3.2.8
 connecting to: 127.0.0.1:1300/test
 mongos> sh.addShard("repl_set_m/localhost:1200,localhost:1201,localhost:1202")
@@ -164,7 +164,7 @@ mongos> sh.status()
   balancer:
         Currently enabled:  yes
         Currently running:  yes
-                Balancer lock taken at Thu Aug 17 2017 23:23:40 GMT+0300 (IDT) by ic-vm-135:1300:1503000377:1804289383:Balancer:846930886
+                Balancer lock taken at Thu Aug 17 2017 23:23:40 GMT+0300 (IDT) by some_host_name:1300:1503000377:1804289383:Balancer:846930886
         Collections with active migrations:
                 test.person started at Thu Aug 17 2017 23:23:40 GMT+0300 (IDT)
         Failed balancer rounds in last 5 attempts:  0
