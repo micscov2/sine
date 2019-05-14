@@ -5,3 +5,5 @@ Personal Typing Master
 
 Bugs
 1. We can set empty paragraph, which can lead to enormous speed
+
+This sub-project also works with - "Ran typinggamedtmw on CentOS 6.9 LEMP" commit in typinggamedtmw
